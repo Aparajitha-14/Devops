@@ -1,0 +1,104 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs 'NodeJS'  // Name must match the NodeJS installation configured in Jenkins
+    }
+
+    environment {
+        // Prevent Next.js telemetry during CI
+        NEXT_TELEMETRY_DISABLED = '1'
+        // Next.js evaluates db modules during compile/build time; this dummy URI allows the build to pass in CI
+        MONGODB_URI = 'mongodb://localhost:27017/dummy'
+        // Add Python path (since Jenkins runs as local system and doesn't inherit user PATH)
+        PATH = "Add the path to python here"
+    }
+
+    stages {
+        // ──────────────────────────────────────────────
+        //  1. Checkout
+        // ──────────────────────────────────────────────
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        // ──────────────────────────────────────────────
+        //  2. Frontend – Install Dependencies
+        // ──────────────────────────────────────────────
+        stage('Frontend - Install') {
+            steps {
+                bat 'npm ci'
+            }
+        }
+
+        // ──────────────────────────────────────────────
+        //  3. Frontend – Lint
+        // ──────────────────────────────────────────────
+        stage('Frontend - Lint') {
+            steps {
+                bat 'npm run lint'
+            }
+        }
+
+        // ──────────────────────────────────────────────
+        //  4. Frontend – Build
+        // ──────────────────────────────────────────────
+        stage('Frontend - Build') {
+            steps {
+                bat 'if exist .next rmdir /s /q .next'
+                bat 'npx next build --webpack'
+            }
+        }
+
+        // ──────────────────────────────────────────────
+        //  5. Backend – Install & Test (pytest)
+        // ──────────────────────────────────────────────
+        stage('Backend - Test') {
+            environment {
+                // Use in-memory SQLite during testing to bypass local Postgres dependency
+                DATABASE_URL = 'sqlite://'
+            }
+            steps {
+                dir('Storeroom backend') {
+                    bat '''
+                        python -m venv venv
+                        call venv\\Scripts\\activate
+                        pip install -r requirements.txt
+                        pytest --junitxml=..\\test-results\\backend.xml -v
+                    '''
+                }
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'test-results/backend.xml'
+                }
+            }
+        }
+
+        // ──────────────────────────────────────────────
+        //  6. Backend – Docker Build
+        // ──────────────────────────────────────────────
+        stage('Backend - Docker Build') {
+            steps {
+                dir('Storeroom backend') {
+                    bat 'docker-compose build'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed. Check the logs above for details.'
+        }
+        always {
+            // Clean up workspace to save disk space
+            cleanWs()
+        }
+    }
+}

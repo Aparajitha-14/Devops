@@ -1,0 +1,148 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* CARE Brand Colors */
+  --background: #FDF2E9; /* Warm cream/beige */
+  --foreground: #000000; /* Deep black text */
+  --card: #FFFFFF; /* Clean white cards */
+  --card-foreground: #000000;
+  --popover: #FFFFFF;
+  --popover-foreground: #000000;
+  
+  --primary: #FBCB04; /* Primary Yellow */
+  --primary-foreground: #000000;
+  --secondary: #F28C5F; /* Secondary Orange */
+  --secondary-foreground: #FFFFFF;
+  
+  --muted: #F0E2D5;
+  --muted-foreground: #5A5A5A;
+  --accent: #F28C5F;
+  --accent-foreground: #FFFFFF;
+  
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #E8D3C1;
+  --input: #FFFFFF;
+  --ring: #FBCB04;
+  
+  --chart-1: #FBCB04;
+  --chart-2: #F28C5F;
+  --chart-3: #1E314D;
+  --chart-4: #D4C5B9;
+  --chart-5: #000000;
+  
+  --radius: 1rem; /* 16px radius for cards based on analysis */
+  --radius-full: 9999px; /* Used for pill buttons */
+  
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #F28C5F;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FBCB04;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #E8D3C1;
+  --sidebar-ring: #FBCB04;
+}
+
+.dark {
+  --background: #1E314D; /* Dark navy */
+  --foreground: #FFFFFF; /* White text */
+  --card: #2B4263; /* Slightly lighter navy */
+  --card-foreground: #FFFFFF;
+  --popover: #2B4263;
+  --popover-foreground: #FFFFFF;
+  
+  --primary: #FBCB04; /* Primary Yellow */
+  --primary-foreground: #000000;
+  --secondary: #F28C5F; /* Secondary Orange */
+  --secondary-foreground: #FFFFFF;
+  
+  --muted: #2B4263;
+  --muted-foreground: #B0C4DE;
+  --accent: #F28C5F;
+  --accent-foreground: #FFFFFF;
+  
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #3A557A;
+  --input: #2B4263;
+  --ring: #FBCB04;
+  
+  --chart-1: #FBCB04;
+  --chart-2: #F28C5F;
+  --chart-3: #8AA4C8;
+  --chart-4: #3A557A;
+  --chart-5: #FFFFFF;
+  
+  --sidebar: #1E314D;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #F28C5F;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FBCB04;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #3A557A;
+  --sidebar-ring: #FBCB04;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans-text), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sans-display), ui-sans-serif, system-ui, sans-serif;
+  
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-full: var(--radius-full);
+  
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-foreground font-bold;
+  }
+  h1 { @apply text-4xl md:text-5xl lg:text-6xl; }
+  h2 { @apply text-3xl md:text-4xl; }
+  h3 { @apply text-2xl md:text-3xl; }
+}
