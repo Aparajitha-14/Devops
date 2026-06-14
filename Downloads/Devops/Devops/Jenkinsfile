@@ -2,21 +2,24 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS'  // Name must match the NodeJS installation configured in Jenkins
+        nodejs 'NodeJS'  // Must match Jenkins Tool configuration
     }
 
     environment {
         // Prevent Next.js telemetry during CI
         NEXT_TELEMETRY_DISABLED = '1'
-        // Next.js evaluates db modules during compile/build time; this dummy URI allows the build to pass in CI
+
+        // Dummy MongoDB URI for Next.js build
         MONGODB_URI = 'mongodb://localhost:27017/dummy'
-        // Add Python path (since Jenkins runs as local system and doesn't inherit user PATH)
-        PATH = "Add the path to python here"
+
+        // Keep existing PATH and add Python
+        PATH = "${env.PATH};C:\\Python312;C:\\Python312\\Scripts"
     }
 
     stages {
+
         // ──────────────────────────────────────────────
-        //  1. Checkout
+        // 1. Checkout
         // ──────────────────────────────────────────────
         stage('Checkout') {
             steps {
@@ -25,7 +28,7 @@ pipeline {
         }
 
         // ──────────────────────────────────────────────
-        //  2. Frontend – Install Dependencies
+        // 2. Frontend – Install Dependencies
         // ──────────────────────────────────────────────
         stage('Frontend - Install') {
             steps {
@@ -34,7 +37,7 @@ pipeline {
         }
 
         // ──────────────────────────────────────────────
-        //  3. Frontend – Lint
+        // 3. Frontend – Lint
         // ──────────────────────────────────────────────
         stage('Frontend - Lint') {
             steps {
@@ -43,7 +46,7 @@ pipeline {
         }
 
         // ──────────────────────────────────────────────
-        //  4. Frontend – Build
+        // 4. Frontend – Build
         // ──────────────────────────────────────────────
         stage('Frontend - Build') {
             steps {
@@ -53,13 +56,13 @@ pipeline {
         }
 
         // ──────────────────────────────────────────────
-        //  5. Backend – Install & Test (pytest)
+        // 5. Backend – Test
         // ──────────────────────────────────────────────
         stage('Backend - Test') {
             environment {
-                // Use in-memory SQLite during testing to bypass local Postgres dependency
                 DATABASE_URL = 'sqlite://'
             }
+
             steps {
                 dir('Storeroom backend') {
                     bat '''
@@ -70,6 +73,7 @@ pipeline {
                     '''
                 }
             }
+
             post {
                 always {
                     junit allowEmptyResults: true, testResults: 'test-results/backend.xml'
@@ -78,7 +82,7 @@ pipeline {
         }
 
         // ──────────────────────────────────────────────
-        //  6. Backend – Docker Build
+        // 6. Backend – Docker Build
         // ──────────────────────────────────────────────
         stage('Backend - Docker Build') {
             steps {
@@ -93,11 +97,12 @@ pipeline {
         success {
             echo '✅ Pipeline completed successfully!'
         }
+
         failure {
             echo '❌ Pipeline failed. Check the logs above for details.'
         }
+
         always {
-            // Clean up workspace to save disk space
             cleanWs()
         }
     }
